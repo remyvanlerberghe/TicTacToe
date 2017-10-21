@@ -1,6 +1,6 @@
-package com.tictactoe.android.tictactoe.Model;
+package com.tictactoe.android.tictactoe.Models;
 
-public class Partie {
+public class Party {
     public String player1;
     public String player2;
     public String c11 = " ";
@@ -12,7 +12,10 @@ public class Partie {
     public String c31 = " ";
     public String c32 = " ";
     public String c33 = " ";
+    public int shots = 0;
+    public boolean finished = false;
+    public String winner = " ";
 
-    public Partie() {
+    public Party() {
     }
 }

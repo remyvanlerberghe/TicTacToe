@@ -7,7 +7,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +15,7 @@ import android.widget.EditText;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.tictactoe.android.tictactoe.Model.Partie;
+import com.tictactoe.android.tictactoe.Models.Party;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,20 +23,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intentsms = new Intent(MainActivity.this, PartyActivity.class);
-        //intentsms.putExtra("sms_body", "Cliquez sur le lien pour rejoindre cet ami dans Tic Tac Toe : www.danielpaul.fr/tictactoe?id=" + myRef.getKey());
-        startActivity(intentsms);
+//        Intent intentsms = new Intent(MainActivity.this, PartyActivity.class);
+//        //intentsms.putExtra("sms_body", "Cliquez sur le lien pour rejoindre cet ami dans Tic Tac Toe : www.danielpaul.fr/tictactoe?id=" + myRef.getKey());
+//        startActivity(intentsms);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         final EditText player1 = (EditText) findViewById(R.id.nomJoueur);
         Button inviterAmi = (Button) findViewById(R.id.inviterAmi);
@@ -46,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference myRef = database.getReference("parties").push();
-                Partie p = new Partie();
+                Party p = new Party();
                 p.player1 = player1.getText().toString();
                 myRef.setValue(p);
 

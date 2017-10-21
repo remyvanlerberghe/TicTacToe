@@ -8,46 +8,55 @@
     tools:context="com.tictactoe.android.tictactoe.MainActivity"
     tools:showIn="@layout/activity_main">
 
-<LinearLayout
-    android:layout_width="368dp"
-    android:layout_height="495dp"
-    android:orientation="vertical"
-    tools:layout_editor_absoluteY="0dp"
-    android:layout_marginRight="8dp"
-    app:layout_constraintRight_toRightOf="parent">
-
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bienvenue sur l'application Tic Tac Toe"
-        android:textAlignment="center"
-        android:textSize="25dp"/>
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_margin="10dp">
 
-    <EditText
-        android:id="@+id/nomJoueur"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bienvenue sur l'application Tic Tac Toe"
+            android:textAlignment="center"
+            android:textSize="25dp" />
 
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/inviterAmi"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:text="Inviter un ami"/>
+        <EditText
+            android:id="@+id/nomJoueur"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Saisir un nom d'utilisateur"
+            android:layout_marginTop="50dp"/>
 
-    <EditText
-        android:id="@+id/rejoindrePartieId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/inviterAmi"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Inviter un ami" />
 
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/rejoindrePartie"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:text="Rejoindre une partie"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OU"
+            android:layout_marginTop="25dp"/>
 
-</LinearLayout >
+        <EditText
+            android:id="@+id/rejoindrePartieId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Saisir un numéro de partie"
+            android:layout_marginTop="25dp"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/rejoindrePartie"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rejoindre une partie" />
+
+    </LinearLayout>
 
 
 </android.support.constraint.ConstraintLayout>
