@@ -2,8 +2,6 @@ package com.tictactoe.android.tictactoe;
 
 import android.content.Intent;
 import android.os.CountDownTimer;
-import android.support.annotation.IntegerRes;
-import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,7 +13,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.tictactoe.android.tictactoe.Models.Party;
 
 public class PartyActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -24,11 +21,12 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     String id;
     Button c11, c12, c13, c21, c22, c23, c31, c32, c33;
     CountDownTimer countDownTimer;
-    TextView tour;
+    TextView tour, etat;
 
     Boolean round = true;
     String p1 = "0";
     String p2 = "X";
+    int coups = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +42,8 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                 decompte.setText("Done !");
             }
         };
+
+        etat = (TextView) findViewById(R.id.etatPartie);
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
 
@@ -101,7 +101,9 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                     String sc33 = dataSnapshot.child("c33").getValue().toString();
                     c33.setText(sc33);
 
-                    haveWinner(sc11, sc12, sc13, sc21, sc22, sc23, sc31, sc32, sc33);
+                    coups = Integer.valueOf(dataSnapshot.child("shots").getValue().toString());
+
+                    controlGame(sc11, sc12, sc13, sc21, sc22, sc23, sc31, sc32, sc33);
                 } catch (Exception e) {
                     Intent i = new Intent(PartyActivity.this, MainActivity.class);
                     startActivity(i);
@@ -125,34 +127,63 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
             tour.setText("A joueur 2 de jouer");
     }
 
-    public boolean haveWinner(String c11, String c12, String c13, String c21, String c22, String c23, String c31, String c32, String c33) {
+    public boolean controlGame(String c11, String c12, String c13, String c21, String c22, String c23, String c31, String c32, String c33) {
+        DatabaseReference myRef;
         boolean gagne = false;
-        String winner;
+        String winner = "";
 
-        if ((c11 == c12) && (c12 == c13) && c13 != "") {
+        if ((c11.equals(c12)) && (c12.equals(c13)) && !c13.equals("") && !c13.equals(" ")) {
             gagne = true;
-        } else if ((c21 == c22) && (c22 == c23) && c23 != "") {
+            winner = c13;
+        } else if ((c21.equals(c22)) && (c22.equals(c23)) && !c23.equals("") && !c23.equals(" ")) {
             gagne = true;
-        } else if ((c31 == c32) && (c32 == c33) && c33 != "") {
+            winner = c23;
+        } else if ((c31.equals(c32)) && (c32.equals(c33)) && !c33.equals("") && !c33.equals(" ")) {
             gagne = true;
-        } else if ((c11 == c21) && (c21 == c31) && c31 != "") {
+            winner = c33;
+        } else if ((c11.equals(c21)) && (c21.equals(c31)) && !c31.equals("") && !c31.equals(" ")) {
             gagne = true;
-        } else if ((c12 == c22) && (c22 == c32) && c32 != "") {
+            winner = c31;
+        } else if ((c12.equals(c22)) && (c22.equals(c32)) && !c32.equals("") && !c32.equals(" ")) {
             gagne = true;
-        } else if ((c13 == c23) && (c23 == c33) && c33 != "") {
+            winner = c32;
+        } else if ((c13.equals(c23)) && (c23.equals(c33)) && !c33.equals("") && !c33.equals(" ")) {
             gagne = true;
-        } else if ((c11 == c22) && (c22 == c33) && c33 != "") {
+            winner = c33;
+        } else if ((c11.equals(c22)) && (c22.equals(c33)) && !c33.equals("") && !c33.equals(" ")) {
             gagne = true;
-        } else if ((c13 == c22) && (c22 == c31) && c31 != "") {
+            winner = c33;
+        } else if ((c13.equals(c22)) && (c22.equals(c31)) && !c31.equals("") && !c31.equals(" ")) {
             gagne = true;
+            winner = c31;
         }
+        myRef = database.getReference("parties").child(id);
+        if (gagne) {
+            myRef.child("finished").setValue(true);
+            myRef.child("winner").setValue(winner);
+            setUnClickable();
+            etat.setText("Le joueurr " + winner + " a gagné");
+        }else{
+            myRef.child("finished").setValue(false);
+            myRef.child("winner").setValue("");
+        }
+
         return gagne;
     }
 
-    public void finishGame() {
-        DatabaseReference myRef;
-        myRef = database.getReference("parties").child(id).child("finished");
-        myRef.setValue(true);
+    public void setClickable(){
+        c11.setClickable(true);
+        c12.setClickable(true);
+        c13.setClickable(true);
+        c21.setClickable(true);
+        c22.setClickable(true);
+        c23.setClickable(true);
+        c31.setClickable(true);
+        c32.setClickable(true);
+        c33.setClickable(true);
+    }
+
+    public void setUnClickable(){
         c11.setClickable(false);
         c12.setClickable(false);
         c13.setClickable(false);
@@ -168,6 +199,10 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         DatabaseReference myRef;
         String player = round ? p1 : p2;
+
+        myRef = database.getReference("parties").child(id).child("shots");
+        myRef.setValue(coups + 1);
+
         switch (v.getId()) {
             case R.id.c11:
                 c11.setText(player);

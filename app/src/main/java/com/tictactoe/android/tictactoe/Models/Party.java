@@ -1,6 +1,7 @@
 package com.tictactoe.android.tictactoe.Models;
 
 public class Party {
+    public String id;
     public String player1;
     public String player2;
     public String c11 = " ";
