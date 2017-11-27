@@ -162,7 +162,7 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
             myRef.child("finished").setValue(true);
             myRef.child("winner").setValue(winner);
             setUnClickable();
-            etat.setText("Le joueurr " + winner + " a gagné");
+            etat.setText("Le joueur " + winner + " a gagné");
         }else{
             myRef.child("finished").setValue(false);
             myRef.child("winner").setValue("");

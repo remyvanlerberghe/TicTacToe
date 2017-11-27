@@ -4,23 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.tictactoe.android.tictactoe.MainActivity"
-    tools:showIn="@layout/activity_main"
-    android:layout_margin="25dp">
+    tools:context="com.tictactoe.android.tictactoe.InviteActivity">
 
     <LinearLayout
-        android:layout_width="318dp"
+        android:layout_width="368dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
+        android:layout_margin="10dp"
         tools:layout_editor_absoluteY="0dp"
         tools:layout_editor_absoluteX="8dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Bienvenue sur l'application Tic Tac Toe"
+            android:text="Avant de commencer"
             android:textAlignment="center"
             android:textSize="25dp" />
 
@@ -29,14 +27,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Saisir un nom d'utilisateur"
-            android:layout_marginTop="150dp"/>
+            android:layout_marginTop="50dp"
+            android:enabled="false"/>
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/next"
+            android:id="@+id/inviterAmi"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Suivant" />
+            android:text="Inviter un ami" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OU"
+            android:layout_marginTop="25dp"/>
+
+        <EditText
+            android:id="@+id/rejoindrePartieId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Saisir un numéro de partie"
+            android:layout_marginTop="25dp"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/rejoindrePartie"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rejoindre une partie" />
 
     </LinearLayout>
 
