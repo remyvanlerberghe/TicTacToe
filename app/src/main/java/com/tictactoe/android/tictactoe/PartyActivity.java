@@ -19,7 +19,7 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     FirebaseDatabase database;
 
     String id;
-    Button c11, c12, c13, c21, c22, c23, c31, c32, c33;
+    Button c11, c12, c13, c21, c22, c23, c31, c32, c33, goToChat;
     CountDownTimer countDownTimer;
     TextView tour, etat;
 
@@ -72,9 +72,10 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         c32.setOnClickListener(this);
         c33 = (Button) findViewById(R.id.c33);
         c33.setOnClickListener(this);
+        goToChat = (Button) findViewById(R.id.goToChat);
+        goToChat.setOnClickListener(this);
 
         DatabaseReference myRef = database.getReference("parties").child(id);
-
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -270,6 +271,11 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                 myRef.setValue(player);
                 break;
 
+            case R.id.goToChat:
+                Intent intentChat = new Intent(PartyActivity.this, ChatActivity.class);
+                intentChat.putExtra("id", getIntent().getStringExtra("id"));
+                startActivity(intentChat);
+                break;
             default:
                 break;
         }

@@ -19,8 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".InviteActivity" />
         <activity android:name=".PartyActivity" />
-        <activity android:name=".InviteActivity"></activity>
+        <activity android:name=".ChatActivity" />
     </application>
 
 </manifest>
