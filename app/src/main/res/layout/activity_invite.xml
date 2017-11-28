@@ -47,7 +47,7 @@
             android:id="@+id/rejoindrePartieId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Saisir un numéro de partie"
+            android:hint="Saisir l'identifiant d'une partie"
             android:layout_marginTop="25dp"/>
 
         <android.support.v7.widget.AppCompatButton

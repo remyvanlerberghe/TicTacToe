@@ -2,43 +2,24 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/partyActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.tictactoe.android.tictactoe.PartyActivity">
 
     <LinearLayout
         android:layout_width="368dp"
-        android:layout_height="495dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:layout_editor_absoluteY="8dp"
+        tools:layout_editor_absoluteY="0dp"
         tools:layout_editor_absoluteX="8dp">
 
         <TextView
+            android:id="@+id/match"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Partie :"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Joueur 1 :" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Joueur 2 :" />
-
-        <TextView
-            android:id="@+id/tour"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="A de jouer" />
-
-        <TextView
-            android:id="@+id/decompte"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="30 secondes restantes" />
+            android:textAlignment="center"
+            android:textSize="24dp" />
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="fill_parent"
@@ -127,14 +108,23 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/decompte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="01 : 00"
+                android:textSize="24dp" />
 
             <TextView
                 android:id="@+id/etatPartie"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Etat"
                 android:textAlignment="center"
+                android:text="Au tour du joueur  : X"
                 android:textSize="24dp" />
 
         </LinearLayout>

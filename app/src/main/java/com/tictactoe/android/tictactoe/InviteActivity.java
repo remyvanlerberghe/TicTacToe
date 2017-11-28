@@ -23,8 +23,7 @@ public class InviteActivity extends AppCompatActivity {
 
         et_nomJoueur = (EditText) findViewById(R.id.nomJoueur);
 
-        Globals sharedData = Globals.getInstance();
-        String name = sharedData.getValue();
+        String name = Globals.name;
         et_nomJoueur.setText(name);
 
         final EditText player1 = (EditText) findViewById(R.id.nomJoueur);
@@ -41,6 +40,9 @@ public class InviteActivity extends AppCompatActivity {
                 Intent intentsms = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + ""));
                 intentsms.putExtra("sms_body", "Cliquez sur le lien pour rejoindre cet ami dans Tic Tac Toe : www.danielpaul.fr/tictactoe?id=" + myRef.getKey());
                 startActivity(intentsms);
+
+                final EditText rejoindrePartieId = (EditText) findViewById(R.id.rejoindrePartieId);
+                rejoindrePartieId.setText(myRef.getKey());
             }
         });
 
@@ -49,9 +51,9 @@ public class InviteActivity extends AppCompatActivity {
         rejoindrePartie.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentsms = new Intent(InviteActivity.this, PartyActivity.class);
-                intentsms.putExtra("id", rejoindrePartieId.getText().toString());
-                startActivity(intentsms);
+                Intent intent = new Intent(InviteActivity.this, PartyActivity.class);
+                intent.putExtra("id", rejoindrePartieId.getText().toString());
+                startActivity(intent);
             }
         });
     }

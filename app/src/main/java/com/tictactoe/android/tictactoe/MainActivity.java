@@ -14,7 +14,6 @@ public class MainActivity extends AppCompatActivity {
 
     CoordinatorLayout cl_mainActivity;
     EditText name;
-    Globals sharedData = Globals.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +32,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String nom = name.getText().toString();
                 if(!nom.isEmpty() && nom != ""){
-                    Globals sharedData = Globals.getInstance();
-                    sharedData.setValue(nom);
+                    Globals.name = nom;
                     Intent i = new Intent(MainActivity.this, InviteActivity.class);
                     startActivity(i);
                 }else{
