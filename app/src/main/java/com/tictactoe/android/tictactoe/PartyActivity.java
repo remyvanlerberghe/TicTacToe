@@ -6,6 +6,8 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -25,7 +27,7 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     FirebaseDatabase database;
 
     String id;
-    Button c11, c12, c13, c21, c22, c23, c31, c32, c33, goToChat;
+    Button c11, c12, c13, c21, c22, c23, c31, c32, c33;
 
     String player;
 
@@ -92,8 +94,6 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         c32.setOnClickListener(this);
         c33 = (Button) findViewById(R.id.c33);
         c33.setOnClickListener(this);
-        goToChat = (Button) findViewById(R.id.goToChat);
-        goToChat.setOnClickListener(this);
 
         DatabaseReference myRef = database.getReference("parties").child(id);
         myRef.addValueEventListener(new ValueEventListener() {
@@ -318,11 +318,6 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                 myRef = database.getReference("parties").child(id).child("c33");
                 myRef.setValue(player);
                 break;
-            case R.id.goToChat:
-                Intent intentChat = new Intent(PartyActivity.this, ChatActivity.class);
-                intentChat.putExtra("id", getIntent().getStringExtra("id"));
-                startActivity(intentChat);
-                break;
             default:
                 break;
         }
@@ -330,5 +325,23 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         String currentPlayer = coups % 2 == 0 ? "X" : "0";
         myRef = database.getReference("parties").child(id).child("next");
         myRef.setValue(player);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_party, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_message:
+                Intent intentChat = new Intent(PartyActivity.this, ChatActivity.class);
+                intentChat.putExtra("id", getIntent().getStringExtra("id"));
+                startActivity(intentChat);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

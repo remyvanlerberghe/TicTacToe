@@ -129,12 +129,6 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/goToChat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Chat" />
-
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.tictactoe.android.tictactoe.MainActivity">
+
+    <item
+        android:id="@+id/action_message"
+        android:orderInCategory="100"
+        android:title="Message"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_message"/>
+
+</menu>
