@@ -35,10 +35,12 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     TextView etat, decompte, tv_match;
 
     Boolean round = true;
-    String p1 = "0";
-    String p2 = "X";
+    String p1 = "X";
+    String p2 = "0";
     int coups = 0;
     String currentPlayer;
+    String player1_name;
+    String player2_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +115,8 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                     String nextPlayer = dataSnapshot.child("next").getValue().toString();
                     player = nextPlayer;
 
+                    player1_name = dataSnapshot.child("player1").getValue().toString();
+                    player2_name = dataSnapshot.child("player2").getValue().toString();
                     String sc11 = dataSnapshot.child("c11").getValue().toString();
                     c11.setText(sc11);
                     String sc12 = dataSnapshot.child("c12").getValue().toString();
@@ -233,7 +237,7 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         c33.setClickable(true);
     }
 
-    public void setUnClickable(){
+    public void setUnClickable() {
         c11.setClickable(false);
         c12.setClickable(false);
         c13.setClickable(false);
@@ -339,6 +343,9 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
             case R.id.action_message:
                 Intent intentChat = new Intent(PartyActivity.this, ChatActivity.class);
                 intentChat.putExtra("id", getIntent().getStringExtra("id"));
+                intentChat.putExtra("player1", player1_name);
+                intentChat.putExtra("player2", player2_name);
+
                 startActivity(intentChat);
                 return true;
         }

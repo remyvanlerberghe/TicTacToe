@@ -6,4 +6,7 @@
     <color name="white">#FFFFFF</color>
     <color name="green">#28a745</color>
     <color name="red">#dc3545</color>
+    <color name="chatBlue">#2196FD</color>
+    <color name="chatGrey">#E6E5EB</color>
+    <color name="chatGreyDark">#979797</color>
 </resources>

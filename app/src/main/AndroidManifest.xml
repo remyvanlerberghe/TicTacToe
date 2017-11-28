@@ -21,7 +21,9 @@
         </activity>
         <activity android:name=".InviteActivity" />
         <activity android:name=".PartyActivity" />
-        <activity android:name=".ChatActivity" />
+        <activity
+            android:name=".ChatActivity"
+            android:parentActivityName=".PartyActivity" />
     </application>
 
 </manifest>

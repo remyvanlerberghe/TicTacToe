@@ -3,20 +3,28 @@ package com.tictactoe.android.tictactoe;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.github.bassaer.chatmessageview.models.User;
 import com.github.bassaer.chatmessageview.models.Message;
 
@@ -33,117 +41,53 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 
 public class ChatActivity extends AppCompatActivity {
     FirebaseDatabase database;
     ChatView mChatView;
     ConstraintLayout messageViewContainer;
+    User me;
+    User you;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //User id
-        int myId = 0;
-        //User icon
-        Bitmap myIcon = BitmapFactory.decodeResource(getResources(), R.drawable.face_2);
-        //User name
-        String myName = "Michael";
+        String player1 = getIntent().getStringExtra("player1");
+        TextDrawable p1 = TextDrawable.builder()
+                .buildRect(player1.toUpperCase().substring(0, 1), ContextCompat.getColor(this, R.color.chatGreyDark));
+        Bitmap p1icon = drawableToBitmap(p1);
 
-        int yourId = 1;
-        Bitmap yourIcon = BitmapFactory.decodeResource(getResources(), R.drawable.face_1);
-        String yourName = "Emily";
+        String player2 = getIntent().getStringExtra("player2");
+        TextDrawable p2 = TextDrawable.builder()
+                .buildRect(player2.toUpperCase().substring(0, 1).substring(0, 1), ContextCompat.getColor(this, R.color.chatGreyDark));
 
-        final User me = new User(myId, myName, myIcon);
-        final User you = new User(yourId, yourName, yourIcon);
-
+        Bitmap p2icon = drawableToBitmap(p2);
+        if (Globals.name.equals(player1)) {
+            me = new User(1, player1, p1icon);
+            you = new User(2, player2, p2icon);
+        } else {
+            me = new User(2, player2, p2icon);
+            you = new User(1, player1, p1icon);
+        }
         database = FirebaseDatabase.getInstance();
         mChatView = (ChatView) findViewById(R.id.chatView);
-        mChatView.setRightBubbleColor(ContextCompat.getColor(this, R.color.green500));
-        mChatView.setLeftBubbleColor(Color.WHITE);
-        mChatView.setBackgroundColor(ContextCompat.getColor(this, R.color.blueGray500));
-        mChatView.setSendButtonColor(ContextCompat.getColor(this, R.color.cyan900));
+        mChatView.setBackgroundColor(Color.WHITE);
         mChatView.setSendIcon(R.drawable.ic_action_send);
-        mChatView.setRightMessageTextColor(Color.WHITE);
-        mChatView.setLeftMessageTextColor(Color.BLACK);
-        mChatView.setUsernameTextColor(Color.WHITE);
-        mChatView.setSendTimeTextColor(Color.WHITE);
-        mChatView.setDateSeparatorColor(Color.WHITE);
-        mChatView.setInputTextHint("new message...");
+        mChatView.setInputTextHint("Message...");
         mChatView.setMessageMarginTop(5);
         mChatView.setMessageMarginBottom(5);
-        mChatView.setOnBubbleClickListener(new Message.OnBubbleClickListener() {
-            @Override
-            public void onClick(Message message) {
-                Toast.makeText(
-                        ChatActivity.this,
-                        "click : " + message.getUser().getName() + " - " + message.getMessageText(),
-                        Toast.LENGTH_SHORT
-                ).show();
-            }
-        });
-
-        //Click option button
-        mChatView.setOnClickOptionButtonListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar snackbar1 = Snackbar.make(view, "Vous devez saisir un nom d'utilisateur", Snackbar.LENGTH_LONG);
-                snackbar1.show();
-            }
-        });
-
-        mChatView.setOnIconClickListener(new Message.OnIconClickListener() {
-            @Override
-            public void onIconClick(Message message) {
-                System.out.println(message.getCreatedAt());
-            }
-        });
-        mChatView.setOnBubbleLongClickListener(new Message.OnBubbleLongClickListener() {
-            @Override
-            public void onLongClick(Message message) {
-                System.out.println(message.getMessageText());
-                AlertDialog myQuittingDialogBox = new AlertDialog.Builder(getApplicationContext())
-                        //set message, title, and icon
-                        .setTitle("Delete")
-                        .setMessage("Do you want to Delete")
-
-                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-
-                            public void onClick(DialogInterface dialog, int whichButton) {
-                                //your deleting code
-                                dialog.dismiss();
-                            }
-
-                        })
-
-
-                        .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                dialog.dismiss();
-
-                            }
-                        })
-                        .create();
-                myQuittingDialogBox.show();
-            }
-        });
         messageViewContainer = (ConstraintLayout) findViewById(R.id.messageViewContainer);
         DatabaseReference messagesRef = database.getReference("parties").child(getIntent().getStringExtra("id")).child("chatroom").child("messages");
-
         mChatView.setOnClickSendButtonListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String toSend = mChatView.getInputText();
-
                 DatabaseReference myRef = database.getReference("parties").child(getIntent().getStringExtra("id"));
                 DatabaseReference messageRef = myRef.child("chatroom").child("messages").push();
-                messageRef.setValue(new com.tictactoe.android.tictactoe.Models.Message(myRef.child("player1").getKey(), toSend, ServerValue.TIMESTAMP));
+                messageRef.setValue(new com.tictactoe.android.tictactoe.Models.Message(Globals.name, toSend, ServerValue.TIMESTAMP));
             }
         });
         messagesRef.addValueEventListener(new ValueEventListener() {
@@ -157,11 +101,10 @@ public class ChatActivity extends AppCompatActivity {
                     long time = (long) messageSnapshot.child("time").getValue();
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(time);
-                    if (sender.equals("player1")) {
+                    if (sender.equals(Globals.name)) {
                         Message message = new Message.Builder().setUser(me)
                                 .setRightMessage(true)
                                 .setMessageText(content)
-                                .hideIcon(true)
                                 .setCreatedAt(calendar)
                                 .setDateCell(true)
                                 .build();
@@ -174,11 +117,9 @@ public class ChatActivity extends AppCompatActivity {
                                 .setMessageText(content)
                                 .setCreatedAt(calendar)
                                 .setDateCell(true)
-
                                 .build();
                         mChatView.send(receivedMessage);
                     }
-                    //Reset edit text
                     mChatView.setInputText("");
                 }
                 mChatView.setRefreshing(false);
@@ -189,5 +130,36 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent intent = NavUtils.getParentActivityIntent(this);
+                intent.putExtra("id", getIntent().getStringExtra("id"));
+                NavUtils.navigateUpTo(this, intent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+
+        int width = drawable.getIntrinsicWidth();
+        width = width > 0 ? width : 96; // Replaced the 1 by a 96
+        int height = drawable.getIntrinsicHeight();
+        height = height > 0 ? height : 96; // Replaced the 1 by a 96
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 }
