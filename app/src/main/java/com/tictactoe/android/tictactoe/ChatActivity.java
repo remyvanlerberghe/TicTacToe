@@ -62,8 +62,7 @@ public class ChatActivity extends AppCompatActivity {
 
         String player2 = getIntent().getStringExtra("player2");
         TextDrawable p2 = TextDrawable.builder()
-                .buildRect(player2.toUpperCase().substring(0, 1).substring(0, 1), ContextCompat.getColor(this, R.color.chatGreyDark));
-
+                .buildRect(player2.toUpperCase().substring(0, 1), ContextCompat.getColor(this, R.color.chatGreyDark));
         Bitmap p2icon = drawableToBitmap(p2);
         if (Globals.name.equals(player1)) {
             me = new User(1, player1, p1icon);
