@@ -20,7 +20,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".InviteActivity" />
-        <activity android:name=".PartyActivity" />
+        <activity android:name=".PartyActivity">
+            <intent-filter>
+                <data android:scheme="ttt" />
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ChatActivity"
             android:parentActivityName=".PartyActivity" />
