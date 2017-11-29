@@ -6,6 +6,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,7 +50,8 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_party);
         Intent intent = getIntent();
-        id = intent.getStringExtra("id");
+        Bundle parameters = intent.getExtras();
+        Log.d("DEBUG", parameters.getString("id"));
         cl_partyActivity = (ConstraintLayout) findViewById(R.id.partyActivity);
 
         decompte = (TextView) findViewById(R.id.decompte);
