@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.airbnb.deeplinkdispatch.DeepLink;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import javax.microedition.khronos.opengles.GL;
 
+@DeepLink("ttt://tictactoe?id={id}")
 public class PartyActivity extends AppCompatActivity implements View.OnClickListener {
 
     ConstraintLayout cl_partyActivity;
@@ -46,7 +48,8 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_party);
-
+        Intent intent = getIntent();
+        id = intent.getStringExtra("id");
         cl_partyActivity = (ConstraintLayout) findViewById(R.id.partyActivity);
 
         decompte = (TextView) findViewById(R.id.decompte);
@@ -69,8 +72,6 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         };
 
         etat = (TextView) findViewById(R.id.etatPartie);
-        Intent intent = getIntent();
-        id = intent.getStringExtra("id");
 
         database = FirebaseDatabase.getInstance();
         flipRound(countDownTimer);

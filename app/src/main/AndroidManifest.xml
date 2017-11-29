@@ -22,8 +22,12 @@
         <activity android:name=".InviteActivity" />
         <activity android:name=".PartyActivity">
             <intent-filter>
-                <data android:scheme="ttt" />
                 <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="ttt" />
             </intent-filter>
         </activity>
         <activity
