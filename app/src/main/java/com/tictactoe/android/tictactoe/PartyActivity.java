@@ -239,7 +239,7 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
 
     public void showDialog(String message, boolean isNul){
         new MaterialStyledDialog.Builder(this)
-                .setIcon(isNul ? R.drawable.ic_pause : R.drawable.ic_remove_circle_outline)
+                .setIcon(isNul ? R.drawable.ic_remove_circle_outline : R.drawable.ic_action_achievement)
                 .setTitle("Partie terminée")
                 .setDescription(message)
                 .setPositiveText("Fermer")
