@@ -42,6 +42,9 @@ dependencies {
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'com.airbnb:deeplinkdispatch:3.1.1'
     annotationProcessor 'com.airbnb:deeplinkdispatch-processor:3.1.1'
+
+    compile 'com.github.javiersantos:MaterialStyledDialogs:2.1'
+
     testCompile 'junit:junit:4.12'
 }
 

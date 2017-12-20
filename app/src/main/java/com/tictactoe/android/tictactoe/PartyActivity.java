@@ -2,6 +2,7 @@ package com.tictactoe.android.tictactoe;
 
 import android.content.Intent;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.airbnb.deeplinkdispatch.DeepLink;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,8 +40,6 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
 
     TextView etat, tv_match;
 
-    String p1 = "X";
-    String p2 = "0";
     int coups = 0;
 
     Boolean enabledChat = false;
@@ -190,8 +192,10 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
             setUnClickable();
             if(winner.equals("0")){
                 etat.setText("Le joueur " + player1_name + " a gagné");
+                showDialog("Le joueur " + player1_name + " a gagné", false);
             }else{
                 etat.setText("Le joueur " + player2_name + " a gagné");
+                showDialog("Le joueur " + player2_name + " a gagné", false);
             }
         } else {
             if (coups == 9) {
@@ -199,6 +203,7 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                 myRef.child("winner").setValue("");
                 setUnClickable();
                 etat.setText("Match nul");
+                showDialog("Match nul", true);
             } else {
                 myRef.child("finished").setValue(false);
                 myRef.child("winner").setValue("");
@@ -230,6 +235,22 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         c31.setClickable(false);
         c32.setClickable(false);
         c33.setClickable(false);
+    }
+
+    public void showDialog(String message, boolean isNul){
+        new MaterialStyledDialog.Builder(this)
+                .setIcon(isNul ? R.drawable.ic_pause : R.drawable.ic_remove_circle_outline)
+                .setTitle("Partie terminée")
+                .setDescription(message)
+                .setPositiveText("Fermer")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent i = new Intent(PartyActivity.this, InviteActivity.class);
+                        startActivity(i);
+                    }
+                })
+                .show();
     }
 
     @Override
