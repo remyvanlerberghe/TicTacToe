@@ -7,7 +7,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,9 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import javax.microedition.khronos.opengles.GL;
-
-@DeepLink("ttt://tictactoe?id={id}")
+@DeepLink("ttt://{id}")
 public class PartyActivity extends AppCompatActivity implements View.OnClickListener {
 
     ConstraintLayout cl_partyActivity;
@@ -36,30 +34,49 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     String id;
     Button c11, c12, c13, c21, c22, c23, c31, c32, c33;
 
-    String player, currentPlayer,  player1_name, player2_name;
+    String player, currentPlayer, player1_name, player2_name;
 
     TextView etat, tv_match;
+    String invitedPlayerName;
 
     int coups = 0;
 
     Boolean enabledChat = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_party);
         Intent intent = getIntent();
-        if(intent.getData() != null && intent.getData().getQueryParameter("id") != null){
-            id = intent.getData().getQueryParameter("id");
-        }else{
+        database = FirebaseDatabase.getInstance();
+        if (intent.getBooleanExtra(DeepLink.IS_DEEP_LINK, false)) {
+            Bundle parameters = intent.getExtras();
+            id = parameters.getString("id");
+            System.out.println(id);
+            final DatabaseReference deeplinkRef = database.getReference("parties").child(id);
+            new MaterialDialog.Builder(this)
+                    .title("Entrez votre nom d'utilisateur")
+                    .content("Pour rejoindre la partie, veuillez renseigner un nom")
+                    .inputType(InputType.TYPE_CLASS_TEXT)
+                    .input(R.string.input_hint, R.string.input_hint, new MaterialDialog.InputCallback() {
+                        @Override
+                        public void onInput(MaterialDialog dialog, CharSequence input) {
+                            invitedPlayerName = input.toString();
+                            deeplinkRef.child("player2").setValue(invitedPlayerName);
+                        }
+                    }).show();
+
+        } else {
+            invitedPlayerName = "none";
             id = intent.getStringExtra("id");
         }
+
         cl_partyActivity = (ConstraintLayout) findViewById(R.id.partyActivity);
 
         tv_match = (TextView) findViewById(R.id.match);
 
         etat = (TextView) findViewById(R.id.etatPartie);
 
-        database = FirebaseDatabase.getInstance();
 
         c11 = (Button) findViewById(R.id.c11);
         c11.setOnClickListener(this);
@@ -86,66 +103,67 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if (invitedPlayerName != null) {
+                    try {
+                        if (Globals.name.equals(dataSnapshot.child("player1").getValue().toString())) {
+                            currentPlayer = "X";
+                        } else {
+                            database.getReference("parties").child(id).child("player2").setValue(Globals.name);
+                            currentPlayer = "0";
+                        }
 
-                try {
-                    if (Globals.name.equals(dataSnapshot.child("player1").getValue().toString())) {
-                        currentPlayer = "X";
-                    } else {
-                        database.getReference("parties").child(id).child("player2").setValue(Globals.name);
-                        currentPlayer = "0";
+                        enabledChat = dataSnapshot.child("player2").getValue().toString() != null && !dataSnapshot.child("player2").getValue().toString().equals("") ? true : false;
+
+                        tv_match.setText(dataSnapshot.child("player1").getValue().toString() + " vs " + dataSnapshot.child("player2").getValue().toString());
+
+                        String nextPlayer = dataSnapshot.child("next").getValue().toString();
+                        player = nextPlayer;
+
+                        player1_name = dataSnapshot.child("player1").getValue().toString();
+                        player2_name = dataSnapshot.child("player2").getValue().toString();
+
+                        String sc11 = dataSnapshot.child("c11").getValue().toString();
+                        c11.setText(sc11);
+                        String sc12 = dataSnapshot.child("c12").getValue().toString();
+                        c12.setText(sc12);
+                        String sc13 = dataSnapshot.child("c13").getValue().toString();
+                        c13.setText(sc13);
+
+                        String sc21 = dataSnapshot.child("c21").getValue().toString();
+                        c21.setText(sc21);
+                        String sc22 = dataSnapshot.child("c22").getValue().toString();
+                        c22.setText(sc22);
+                        String sc23 = dataSnapshot.child("c23").getValue().toString();
+                        c23.setText(sc23);
+
+                        String sc31 = dataSnapshot.child("c31").getValue().toString();
+                        c31.setText(sc31);
+                        String sc32 = dataSnapshot.child("c32").getValue().toString();
+                        c32.setText(sc32);
+                        String sc33 = dataSnapshot.child("c33").getValue().toString();
+                        c33.setText(sc33);
+
+                        if (currentPlayer.equals(dataSnapshot.child("next").getValue().toString())) {
+                            setClickable();
+                        } else {
+                            setUnClickable();
+                        }
+
+                        String remaining = dataSnapshot.child("remaining").getValue().toString();
+
+                        coups = Integer.valueOf(dataSnapshot.child("shots").getValue().toString());
+
+                        if (!dataSnapshot.child("next").getValue().toString().equals("0")) {
+                            etat.setText("Au tour de : " + player1_name);
+                        } else {
+                            etat.setText("Au tour de : " + player2_name);
+                        }
+
+                        controlGame(sc11, sc12, sc13, sc21, sc22, sc23, sc31, sc32, sc33);
+                    } catch (Exception e) {
+                        Intent i = new Intent(PartyActivity.this, InviteActivity.class);
+                        startActivity(i);
                     }
-
-                    enabledChat = dataSnapshot.child("player2").getValue().toString() != null  && !dataSnapshot.child("player2").getValue().toString().equals("") ? true : false;
-
-                    tv_match.setText(dataSnapshot.child("player1").getValue().toString() + " vs " + dataSnapshot.child("player2").getValue().toString());
-
-                    String nextPlayer = dataSnapshot.child("next").getValue().toString();
-                    player = nextPlayer;
-
-                    player1_name = dataSnapshot.child("player1").getValue().toString();
-                    player2_name = dataSnapshot.child("player2").getValue().toString();
-
-                    String sc11 = dataSnapshot.child("c11").getValue().toString();
-                    c11.setText(sc11);
-                    String sc12 = dataSnapshot.child("c12").getValue().toString();
-                    c12.setText(sc12);
-                    String sc13 = dataSnapshot.child("c13").getValue().toString();
-                    c13.setText(sc13);
-
-                    String sc21 = dataSnapshot.child("c21").getValue().toString();
-                    c21.setText(sc21);
-                    String sc22 = dataSnapshot.child("c22").getValue().toString();
-                    c22.setText(sc22);
-                    String sc23 = dataSnapshot.child("c23").getValue().toString();
-                    c23.setText(sc23);
-
-                    String sc31 = dataSnapshot.child("c31").getValue().toString();
-                    c31.setText(sc31);
-                    String sc32 = dataSnapshot.child("c32").getValue().toString();
-                    c32.setText(sc32);
-                    String sc33 = dataSnapshot.child("c33").getValue().toString();
-                    c33.setText(sc33);
-
-                    if (currentPlayer.equals(dataSnapshot.child("next").getValue().toString())) {
-                        setClickable();
-                    } else {
-                        setUnClickable();
-                    }
-
-                    String remaining = dataSnapshot.child("remaining").getValue().toString();
-
-                    coups = Integer.valueOf(dataSnapshot.child("shots").getValue().toString());
-
-                    if(!dataSnapshot.child("next").getValue().toString().equals("0")){
-                        etat.setText("Au tour de : " + player1_name);
-                    }else{
-                        etat.setText("Au tour de : " + player2_name);
-                    }
-
-                    controlGame(sc11, sc12, sc13, sc21, sc22, sc23, sc31, sc32, sc33);
-                } catch (Exception e) {
-                    Intent i = new Intent(PartyActivity.this, InviteActivity.class);
-                    startActivity(i);
                 }
             }
 
@@ -190,10 +208,10 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
             myRef.child("finished").setValue(true);
             myRef.child("winner").setValue(winner);
             setUnClickable();
-            if(winner.equals("0")){
+            if (winner.equals("0")) {
                 etat.setText("Le joueur " + player1_name + " a gagné");
                 showDialog("Le joueur " + player1_name + " a gagné", false);
-            }else{
+            } else {
                 etat.setText("Le joueur " + player2_name + " a gagné");
                 showDialog("Le joueur " + player2_name + " a gagné", false);
             }
@@ -237,7 +255,7 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         c33.setClickable(false);
     }
 
-    public void showDialog(String message, boolean isNul){
+    public void showDialog(String message, boolean isNul) {
         new MaterialStyledDialog.Builder(this)
                 .setIcon(isNul ? R.drawable.ic_remove_circle_outline : R.drawable.ic_action_achievement)
                 .setTitle("Partie terminée")
@@ -335,13 +353,13 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_message:
-                if(enabledChat){
+                if (enabledChat) {
                     Intent intentChat = new Intent(PartyActivity.this, ChatActivity.class);
                     intentChat.putExtra("id", getIntent().getStringExtra("id"));
                     intentChat.putExtra("player1", player1_name);
                     intentChat.putExtra("player2", player2_name);
                     startActivity(intentChat);
-                }else{
+                } else {
                     Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Chat indisponible, aucun player 2", Snackbar.LENGTH_LONG);
                     snackbar1.show();
                 }

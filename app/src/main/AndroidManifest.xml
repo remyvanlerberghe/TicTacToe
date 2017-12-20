@@ -20,7 +20,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".InviteActivity" />
-        <activity android:name=".PartyActivity">
+        <activity android:name=".PartyActivity" />
+        <activity
+            android:name=".ChatActivity"
+            android:parentActivityName=".PartyActivity" />
+        <activity
+            android:name=".DeepLinkActivity"
+            android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -30,9 +36,7 @@
                 <data android:scheme="ttt" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ChatActivity"
-            android:parentActivityName=".PartyActivity" />
+
     </application>
 
 </manifest>
