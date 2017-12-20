@@ -36,7 +36,10 @@
                 <data android:scheme="ttt" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".ChatActivity"
+            android:parentActivityName=".PartyActivity" />
+        <activity android:name=".ListActivity"></activity>
     </application>
 
 </manifest>

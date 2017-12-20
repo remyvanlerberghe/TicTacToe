@@ -37,7 +37,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Inviter un ami" />
+            android:text="Créer une partie et inviter un ami" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -57,7 +57,15 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Rejoindre une partie" />
+            android:text="Rejoindre" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/creerParite"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Créer une partie"
+            android:layout_gravity="bottom|center"/>
 
     </LinearLayout>
 

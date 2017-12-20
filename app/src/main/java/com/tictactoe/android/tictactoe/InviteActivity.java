@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,6 +48,21 @@ public class InviteActivity extends AppCompatActivity {
             }
         });
 
+        Button creerParite = (Button) findViewById(R.id.creerParite);
+        creerParite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("parties").push();
+                Party p = new Party();
+                p.player1 = player1.getText().toString();
+                myRef.setValue(p);
+
+                final EditText rejoindrePartieId = (EditText) findViewById(R.id.rejoindrePartieId);
+                rejoindrePartieId.setText(myRef.getKey());
+            }
+        });
+
         final EditText rejoindrePartieId = (EditText) findViewById(R.id.rejoindrePartieId);
         Button rejoindrePartie = (Button) findViewById(R.id.rejoindrePartie);
         rejoindrePartie.setOnClickListener(new View.OnClickListener() {
@@ -56,5 +73,22 @@ public class InviteActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_invite, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_list:
+                Intent i = new Intent(InviteActivity.this, ListActivity.class);
+                startActivity(i);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

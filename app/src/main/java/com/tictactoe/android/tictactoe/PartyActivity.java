@@ -77,7 +77,6 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
 
         etat = (TextView) findViewById(R.id.etatPartie);
 
-
         c11 = (Button) findViewById(R.id.c11);
         c11.setOnClickListener(this);
         c12 = (Button) findViewById(R.id.c12);
