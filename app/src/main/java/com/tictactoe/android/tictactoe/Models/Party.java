@@ -16,7 +16,7 @@ public class Party {
     public int shots = 0;
     public boolean finished = false;
     public String winner = " ";
-    public String next = "X";
+    public String next = "0";
     public String remaining = "1";
 
     public Party() {

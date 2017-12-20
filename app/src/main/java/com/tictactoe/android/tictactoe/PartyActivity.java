@@ -32,52 +32,32 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     String id;
     Button c11, c12, c13, c21, c22, c23, c31, c32, c33;
 
-    String player;
+    String player, currentPlayer,  player1_name, player2_name;
 
-    CountDownTimer countDownTimer;
-    TextView etat, decompte, tv_match;
+    TextView etat, tv_match;
 
-    Boolean round = true;
     String p1 = "X";
     String p2 = "0";
     int coups = 0;
-    String currentPlayer;
-    String player1_name;
-    String player2_name;
 
+    Boolean enabledChat = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_party);
         Intent intent = getIntent();
-        Bundle parameters = intent.getExtras();
-        Log.d("DEBUG", parameters.getString("id"));
+        if(intent.getData() != null && intent.getData().getQueryParameter("id") != null){
+            id = intent.getData().getQueryParameter("id");
+        }else{
+            id = intent.getStringExtra("id");
+        }
         cl_partyActivity = (ConstraintLayout) findViewById(R.id.partyActivity);
 
-        decompte = (TextView) findViewById(R.id.decompte);
         tv_match = (TextView) findViewById(R.id.match);
-
-        countDownTimer = new CountDownTimer(60 * 1000, 1000) {
-            public void onTick(long millisUntilFinished) {
-                decompte.setText("00 : " + millisUntilFinished / 1000);
-            }
-
-            public void onFinish() {
-                Snackbar snackbar = Snackbar.make(cl_partyActivity, "Changement de jouer", Snackbar.LENGTH_LONG);
-                snackbar.show();
-
-                coups++;
-                DatabaseReference myRef;
-                myRef = database.getReference("parties").child(id).child("next");
-                myRef.setValue(coups % 2 == 0 ? "X" : "0");
-            }
-        };
 
         etat = (TextView) findViewById(R.id.etatPartie);
 
         database = FirebaseDatabase.getInstance();
-        flipRound(countDownTimer);
-        countDownTimer.start();
 
         c11 = (Button) findViewById(R.id.c11);
         c11.setOnClickListener(this);
@@ -113,6 +93,8 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                         currentPlayer = "0";
                     }
 
+                    enabledChat = dataSnapshot.child("player2").getValue().toString() != null  && !dataSnapshot.child("player2").getValue().toString().equals("") ? true : false;
+
                     tv_match.setText(dataSnapshot.child("player1").getValue().toString() + " vs " + dataSnapshot.child("player2").getValue().toString());
 
                     String nextPlayer = dataSnapshot.child("next").getValue().toString();
@@ -120,6 +102,7 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
 
                     player1_name = dataSnapshot.child("player1").getValue().toString();
                     player2_name = dataSnapshot.child("player2").getValue().toString();
+
                     String sc11 = dataSnapshot.child("c11").getValue().toString();
                     c11.setText(sc11);
                     String sc12 = dataSnapshot.child("c12").getValue().toString();
@@ -141,9 +124,6 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                     String sc33 = dataSnapshot.child("c33").getValue().toString();
                     c33.setText(sc33);
 
-                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Globals : : " + Globals.name + " | Current : " + currentPlayer + " next : " + dataSnapshot.child("next").getValue().toString() + " | player 1 : " + dataSnapshot.child("player1").getValue().toString(), Snackbar.LENGTH_LONG);
-                    snackbar1.show();
-
                     if (currentPlayer.equals(dataSnapshot.child("next").getValue().toString())) {
                         setClickable();
                     } else {
@@ -151,10 +131,15 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                     }
 
                     String remaining = dataSnapshot.child("remaining").getValue().toString();
-                    decompte.setText("00 : " + remaining);
 
                     coups = Integer.valueOf(dataSnapshot.child("shots").getValue().toString());
-                    etat.setText("Au tour du joueur : " + nextPlayer);
+
+                    if(!dataSnapshot.child("next").getValue().toString().equals("0")){
+                        etat.setText("Au tour de : " + player1_name);
+                    }else{
+                        etat.setText("Au tour de : " + player2_name);
+                    }
+
                     controlGame(sc11, sc12, sc13, sc21, sc22, sc23, sc31, sc32, sc33);
                 } catch (Exception e) {
                     Intent i = new Intent(PartyActivity.this, InviteActivity.class);
@@ -166,13 +151,6 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
             public void onCancelled(DatabaseError error) {
             }
         });
-    }
-
-    public void flipRound(CountDownTimer timer) {
-        round = !round;
-        System.out.println(round);
-        timer.cancel();
-        timer.start();
     }
 
     public boolean controlGame(String c11, String c12, String c13, String c21, String c22, String c23, String c31, String c32, String c33) {
@@ -210,15 +188,17 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
             myRef.child("finished").setValue(true);
             myRef.child("winner").setValue(winner);
             setUnClickable();
-            etat.setText("Le joueur " + winner + " a gagné");
-            decompte.setText("00 : 00");
+            if(winner.equals("0")){
+                etat.setText("Le joueur " + player1_name + " a gagné");
+            }else{
+                etat.setText("Le joueur " + player2_name + " a gagné");
+            }
         } else {
             if (coups == 9) {
                 myRef.child("finished").setValue(true);
                 myRef.child("winner").setValue("");
                 setUnClickable();
                 etat.setText("Match nul");
-                decompte.setText("00 : 00");
             } else {
                 myRef.child("finished").setValue(false);
                 myRef.child("winner").setValue("");
@@ -255,83 +235,73 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         DatabaseReference myRef;
-        String player = round ? p1 : p2;
 
         myRef = database.getReference("parties").child(id).child("shots");
         coups++;
         myRef.setValue(coups);
 
+        String currentPlayer = coups % 2 != 0 ? "X" : "0";
+        myRef = database.getReference("parties").child(id).child("next");
+        myRef.setValue(currentPlayer);
+
         switch (v.getId()) {
             case R.id.c11:
-                c11.setText(player);
+                c11.setText(currentPlayer);
                 c11.setClickable(false);
-                flipRound(countDownTimer);
                 myRef = database.getReference("parties").child(id).child("c11");
-                myRef.setValue(player);
+                myRef.setValue(currentPlayer);
                 break;
             case R.id.c12:
-                c12.setText(player);
+                c12.setText(currentPlayer);
                 c12.setClickable(false);
-                flipRound(countDownTimer);
                 myRef = database.getReference("parties").child(id).child("c12");
-                myRef.setValue(player);
+                myRef.setValue(currentPlayer);
                 break;
             case R.id.c13:
-                c13.setText(player);
+                c13.setText(currentPlayer);
                 c13.setClickable(false);
-                flipRound(countDownTimer);
                 myRef = database.getReference("parties").child(id).child("c13");
-                myRef.setValue(player);
+                myRef.setValue(currentPlayer);
                 break;
             case R.id.c21:
-                c21.setText(player);
+                c21.setText(currentPlayer);
                 c21.setClickable(false);
-                flipRound(countDownTimer);
                 myRef = database.getReference("parties").child(id).child("c21");
-                myRef.setValue(player);
+                myRef.setValue(currentPlayer);
                 break;
             case R.id.c22:
-                c22.setText(player);
+                c22.setText(currentPlayer);
                 c22.setClickable(false);
-                flipRound(countDownTimer);
                 myRef = database.getReference("parties").child(id).child("c22");
-                myRef.setValue(player);
+                myRef.setValue(currentPlayer);
                 break;
             case R.id.c23:
-                c23.setText(player);
+                c23.setText(currentPlayer);
                 c23.setClickable(false);
-                flipRound(countDownTimer);
                 myRef = database.getReference("parties").child(id).child("c23");
-                myRef.setValue(player);
+                myRef.setValue(currentPlayer);
                 break;
             case R.id.c31:
-                c31.setText(player);
+                c31.setText(currentPlayer);
                 c31.setClickable(false);
-                flipRound(countDownTimer);
                 myRef = database.getReference("parties").child(id).child("c31");
-                myRef.setValue(player);
+                myRef.setValue(currentPlayer);
                 break;
             case R.id.c32:
-                c32.setText(player);
+                c32.setText(currentPlayer);
                 c32.setClickable(false);
-                flipRound(countDownTimer);
                 myRef = database.getReference("parties").child(id).child("c32");
-                myRef.setValue(player);
+                myRef.setValue(currentPlayer);
                 break;
             case R.id.c33:
-                c33.setText(player);
+                c33.setText(currentPlayer);
                 c33.setClickable(false);
-                flipRound(countDownTimer);
                 myRef = database.getReference("parties").child(id).child("c33");
-                myRef.setValue(player);
+                myRef.setValue(currentPlayer);
                 break;
             default:
                 break;
         }
-
-        String currentPlayer = coups % 2 == 0 ? "X" : "0";
-        myRef = database.getReference("parties").child(id).child("next");
-        myRef.setValue(player);
     }
 
     @Override
@@ -344,12 +314,16 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_message:
-                Intent intentChat = new Intent(PartyActivity.this, ChatActivity.class);
-                intentChat.putExtra("id", getIntent().getStringExtra("id"));
-                intentChat.putExtra("player1", player1_name);
-                intentChat.putExtra("player2", player2_name);
-
-                startActivity(intentChat);
+                if(enabledChat){
+                    Intent intentChat = new Intent(PartyActivity.this, ChatActivity.class);
+                    intentChat.putExtra("id", getIntent().getStringExtra("id"));
+                    intentChat.putExtra("player1", player1_name);
+                    intentChat.putExtra("player2", player2_name);
+                    startActivity(intentChat);
+                }else{
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Chat indisponible, aucun player 2", Snackbar.LENGTH_LONG);
+                    snackbar1.show();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);

@@ -38,7 +38,7 @@ public class InviteActivity extends AppCompatActivity {
                 myRef.setValue(p);
 
                 Intent intentsms = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + ""));
-                intentsms.putExtra("sms_body", "Cliquez sur le lien pour rejoindre cet ami dans Tic Tac Toe : www.danielpaul.fr/tictactoe?id=" + myRef.getKey());
+                intentsms.putExtra("sms_body", "Cliquez sur le lien pour rejoindre cet ami dans Tic Tac Toe : www.danielpaul.fr/tictactoe/index.php?id=" + myRef.getKey());
                 startActivity(intentsms);
 
                 final EditText rejoindrePartieId = (EditText) findViewById(R.id.rejoindrePartieId);
