@@ -1,6 +1,7 @@
 package com.tictactoe.android.tictactoe;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -23,6 +24,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.net.URI;
 
 @DeepLink("ttt://{id}")
 public class PartyActivity extends AppCompatActivity implements View.OnClickListener {
@@ -51,21 +54,43 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         database = FirebaseDatabase.getInstance();
         if (intent.getBooleanExtra(DeepLink.IS_DEEP_LINK, false)) {
             Bundle parameters = intent.getExtras();
-            id = parameters.getString("id");
-            System.out.println(id);
+            id = Uri.parse(parameters.getString(DeepLink.URI)).getHost();
             final DatabaseReference deeplinkRef = database.getReference("parties").child(id);
-            new MaterialDialog.Builder(this)
-                    .title("Entrez votre nom d'utilisateur")
-                    .content("Pour rejoindre la partie, veuillez renseigner un nom")
-                    .inputType(InputType.TYPE_CLASS_TEXT)
-                    .input(R.string.input_hint, R.string.input_hint, new MaterialDialog.InputCallback() {
-                        @Override
-                        public void onInput(MaterialDialog dialog, CharSequence input) {
-                            invitedPlayerName = input.toString();
-                            deeplinkRef.child("player2").setValue(invitedPlayerName);
-                        }
-                    }).show();
-
+            if (deeplinkRef.child("player2").toString() == null) {
+                new MaterialDialog.Builder(this)
+                        .title("Entrez votre nom d'utilisateur")
+                        .content("Pour rejoindre la partie, veuillez renseigner un nom")
+                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .input("Nom d'utilisateur", "", new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog dialog, CharSequence input) {
+                                invitedPlayerName = input.toString();
+                                deeplinkRef.child("player2").setValue(invitedPlayerName);
+                            }
+                        }).show();
+            } else {
+                new MaterialStyledDialog.Builder(this)
+                        .setIcon(R.drawable.ic_remove_circle_outline)
+                        .setTitle("Partie pleine")
+                        .setDescription("Cette partie a déjà deux joueurs, voulez vous trouver une partie disponible ?")
+                        .setPositiveText("Oui")
+                        .setNegativeText("Non")
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                Intent i = new Intent(PartyActivity.this, ListActivity.class);
+                                startActivity(i);
+                            }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                Intent i = new Intent(PartyActivity.this, MainActivity.class);
+                                startActivity(i);
+                            }
+                        })
+                        .show();
+            }
         } else {
             invitedPlayerName = "none";
             id = intent.getStringExtra("id");
