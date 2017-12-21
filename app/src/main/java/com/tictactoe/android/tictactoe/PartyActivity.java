@@ -67,6 +67,7 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                                     @Override
                                     public void onInput(MaterialDialog dialog, CharSequence input) {
                                         deeplinkRef.child("player2").setValue(input.toString());
+                                        Globals.name = input.toString();
                                         deeplinkRef.addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -114,9 +115,9 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                                                     coups = Integer.valueOf(dataSnapshot.child("shots").getValue().toString());
 
                                                     if (!dataSnapshot.child("next").getValue().toString().equals("0")) {
-                                                        etat.setText("Au tour de : " + player1_name);
+                                                        etat.setText("Au tour de : " + player1_name + " Symbole : 0");
                                                     } else {
-                                                        etat.setText("Au tour de : " + player2_name);
+                                                        etat.setText("Au tour de : " + player2_name + " Symbole : X");
                                                     }
 
                                                     controlGame(sc11, sc12, sc13, sc21, sc22, sc23, sc31, sc32, sc33);
@@ -353,19 +354,23 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void showDialog(String message, boolean isNul) {
-        new MaterialStyledDialog.Builder(this)
-                .setIcon(isNul ? R.drawable.ic_remove_circle_outline : R.drawable.ic_action_achievement)
-                .setTitle("Partie terminée")
-                .setDescription(message)
-                .setPositiveText("Fermer")
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        Intent i = new Intent(PartyActivity.this, InviteActivity.class);
-                        startActivity(i);
-                    }
-                })
-                .show();
+        try {
+            new MaterialStyledDialog.Builder(this)
+                    .setIcon(isNul ? R.drawable.ic_remove_circle_outline : R.drawable.ic_action_achievement)
+                    .setTitle("Partie terminée")
+                    .setDescription(message)
+                    .setPositiveText("Fermer")
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            Intent i = new Intent(PartyActivity.this, InviteActivity.class);
+                            startActivity(i);
+                        }
+                    })
+                    .show();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -452,7 +457,9 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
             case R.id.action_message:
                 if (enabledChat) {
                     Intent intentChat = new Intent(PartyActivity.this, ChatActivity.class);
-                    intentChat.putExtra("id", getIntent().getStringExtra("id"));
+                    intentChat.putExtra("id", getIntent().getBooleanExtra(DeepLink.IS_DEEP_LINK, false)
+                            ? Uri.parse(getIntent().getExtras().getString(DeepLink.URI)).getHost()
+                            : getIntent().getStringExtra("id"));
                     intentChat.putExtra("player1", player1_name);
                     intentChat.putExtra("player2", player2_name);
                     startActivity(intentChat);
