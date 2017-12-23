@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.tictactoe.android.tictactoe.Models.User;
 
 import java.net.URI;
 
@@ -40,6 +41,7 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     String player, currentPlayer, player1_name, player2_name;
 
     TextView etat, tv_match;
+    String invitedPlayerName;
 
     int coups = 0;
 
@@ -49,123 +51,40 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_party);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        setTitle("Que le meilleur gagne !");
+
         Intent intent = getIntent();
         database = FirebaseDatabase.getInstance();
         if (intent.getBooleanExtra(DeepLink.IS_DEEP_LINK, false)) {
             Bundle parameters = intent.getExtras();
-            id = Uri.parse(parameters.getString(DeepLink.URI)).getHost();
+            id = parameters.getString("id");
+            System.out.println(id);
             final DatabaseReference deeplinkRef = database.getReference("parties").child(id);
-            deeplinkRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.child("player2").getValue().toString().isEmpty()) {
-                        new MaterialDialog.Builder(PartyActivity.this)
-                                .title("Entrez votre nom d'utilisateur")
-                                .content("Pour rejoindre la partie, veuillez renseigner un nom")
-                                .inputType(InputType.TYPE_CLASS_TEXT)
-                                .input("Nom d'utilisateur", "", new MaterialDialog.InputCallback() {
-                                    @Override
-                                    public void onInput(MaterialDialog dialog, CharSequence input) {
-                                        deeplinkRef.child("player2").setValue(input.toString());
-                                        Globals.name = input.toString();
-                                        deeplinkRef.addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                try {
-                                                    currentPlayer = "0";
-                                                    enabledChat = dataSnapshot.child("player2").getValue().toString() != null && !dataSnapshot.child("player2").getValue().toString().equals("") ? true : false;
+            new MaterialDialog.Builder(this)
+                    .title("Entrez votre nom d'utilisateur")
+                    .content("Pour rejoindre la partie, veuillez renseigner un nom")
+                    .inputType(InputType.TYPE_CLASS_TEXT)
+                    .input(R.string.username, R.string.cleared, new MaterialDialog.InputCallback() {
+                        @Override
+                        public void onInput(MaterialDialog dialog, CharSequence input) {
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            DatabaseReference myRef = database.getReference("joueurs").push();
+                            User u = new User();
+                            u.nom = input.toString();
+                            myRef.setValue(u);
 
-                                                    tv_match.setText(dataSnapshot.child("player1").getValue().toString() + " vs " + dataSnapshot.child("player2").getValue().toString());
+                            Globals.playerId = myRef.getKey();
+                            Globals.playerName = input.toString();
 
-                                                    String nextPlayer = dataSnapshot.child("next").getValue().toString();
-                                                    player = nextPlayer;
-
-                                                    player1_name = dataSnapshot.child("player1").getValue().toString();
-                                                    player2_name = dataSnapshot.child("player2").getValue().toString();
-
-                                                    String sc11 = dataSnapshot.child("c11").getValue().toString();
-                                                    c11.setText(sc11);
-                                                    String sc12 = dataSnapshot.child("c12").getValue().toString();
-                                                    c12.setText(sc12);
-                                                    String sc13 = dataSnapshot.child("c13").getValue().toString();
-                                                    c13.setText(sc13);
-
-                                                    String sc21 = dataSnapshot.child("c21").getValue().toString();
-                                                    c21.setText(sc21);
-                                                    String sc22 = dataSnapshot.child("c22").getValue().toString();
-                                                    c22.setText(sc22);
-                                                    String sc23 = dataSnapshot.child("c23").getValue().toString();
-                                                    c23.setText(sc23);
-
-                                                    String sc31 = dataSnapshot.child("c31").getValue().toString();
-                                                    c31.setText(sc31);
-                                                    String sc32 = dataSnapshot.child("c32").getValue().toString();
-                                                    c32.setText(sc32);
-                                                    String sc33 = dataSnapshot.child("c33").getValue().toString();
-                                                    c33.setText(sc33);
-
-                                                    if (currentPlayer.equals(dataSnapshot.child("next").getValue().toString())) {
-                                                        setClickable();
-                                                    } else {
-                                                        setUnClickable();
-                                                    }
-
-                                                    String remaining = dataSnapshot.child("remaining").getValue().toString();
-
-                                                    coups = Integer.valueOf(dataSnapshot.child("shots").getValue().toString());
-
-                                                    if (!dataSnapshot.child("next").getValue().toString().equals("0")) {
-                                                        etat.setText("Au tour de : " + player1_name + " Symbole : 0");
-                                                    } else {
-                                                        etat.setText("Au tour de : " + player2_name + " Symbole : X");
-                                                    }
-
-                                                    controlGame(sc11, sc12, sc13, sc21, sc22, sc23, sc31, sc32, sc33);
-                                                } catch (Exception e) {
-                                                    Intent i = new Intent(PartyActivity.this, InviteActivity.class);
-                                                    startActivity(i);
-                                                }
-                                            }
-
-
-                                            @Override
-                                            public void onCancelled(DatabaseError error) {
-                                            }
-                                        });
-                                    }
-                                }).show();
-                    } else {
-                        new MaterialStyledDialog.Builder(PartyActivity.this)
-                                .setIcon(R.drawable.ic_remove_circle_outline)
-                                .setTitle("Partie pleine")
-                                .setDescription("Cette partie a déjà deux joueurs, voulez vous trouver une partie disponible ?")
-                                .setPositiveText("Oui")
-                                .setNegativeText("Non")
-                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                        Intent i = new Intent(PartyActivity.this, ListActivity.class);
-                                        startActivity(i);
-                                    }
-                                })
-                                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                        Intent i = new Intent(PartyActivity.this, MainActivity.class);
-                                        startActivity(i);
-                                    }
-                                })
-                                .show();
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+                            invitedPlayerName = input.toString();
+                            deeplinkRef.child("player2").setValue(invitedPlayerName);
+                        }
+                    }).show();
 
         } else {
+            invitedPlayerName = "none";
             id = intent.getStringExtra("id");
         }
 
@@ -196,16 +115,16 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         c33 = (Button) findViewById(R.id.c33);
         c33.setOnClickListener(this);
 
-        if (!intent.getBooleanExtra(DeepLink.IS_DEEP_LINK, false)) {
-            DatabaseReference myRef = database.getReference("parties").child(id);
-            myRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+        DatabaseReference myRef = database.getReference("parties").child(id);
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (invitedPlayerName != null) {
                     try {
-                        if (Globals.name.equals(dataSnapshot.child("player1").getValue().toString())) {
+                        if (Globals.playerName.equals(dataSnapshot.child("player1").getValue().toString())) {
                             currentPlayer = "X";
                         } else {
-                            database.getReference("parties").child(id).child("player2").setValue(Globals.name);
+                            database.getReference("parties").child(id).child("player2").setValue(Globals.playerName);
                             currentPlayer = "0";
                         }
 
@@ -262,13 +181,12 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
                         startActivity(i);
                     }
                 }
+            }
 
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                }
-            });
-        }
+            @Override
+            public void onCancelled(DatabaseError error) {
+            }
+        });
     }
 
     public boolean controlGame(String c11, String c12, String c13, String c21, String c22, String c23, String c31, String c32, String c33) {
@@ -354,23 +272,19 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void showDialog(String message, boolean isNul) {
-        try {
-            new MaterialStyledDialog.Builder(this)
-                    .setIcon(isNul ? R.drawable.ic_remove_circle_outline : R.drawable.ic_action_achievement)
-                    .setTitle("Partie terminée")
-                    .setDescription(message)
-                    .setPositiveText("Fermer")
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            Intent i = new Intent(PartyActivity.this, InviteActivity.class);
-                            startActivity(i);
-                        }
-                    })
-                    .show();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        new MaterialStyledDialog.Builder(this)
+                .setIcon(isNul ? R.drawable.ic_remove_circle_outline : R.drawable.ic_action_achievement)
+                .setTitle("Partie terminée")
+                .setDescription(message)
+                .setPositiveText("Fermer")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent i = new Intent(PartyActivity.this, InviteActivity.class);
+                        startActivity(i);
+                    }
+                })
+                .show();
     }
 
     @Override
@@ -387,59 +301,115 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
 
         switch (v.getId()) {
             case R.id.c11:
-                c11.setText(currentPlayer);
-                c11.setClickable(false);
-                myRef = database.getReference("parties").child(id).child("c11");
-                myRef.setValue(currentPlayer);
-                break;
+                if(c11.getText().toString().equals("") || c11.getText().toString().equals(" ")){
+                    c11.setText(currentPlayer);
+                    c11.setClickable(false);
+                    myRef = database.getReference("parties").child(id).child("c11");
+                    myRef.setValue(currentPlayer);
+                    break;
+                }else{
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Vous ne pouvez pas séléctionner cette case", Snackbar.LENGTH_LONG);
+                    snackbar1.show();
+                    break;
+                }
             case R.id.c12:
-                c12.setText(currentPlayer);
-                c12.setClickable(false);
-                myRef = database.getReference("parties").child(id).child("c12");
-                myRef.setValue(currentPlayer);
-                break;
+                if(c12.getText().toString().equals("") || c12.getText().toString().equals(" ")){
+                    c12.setText(currentPlayer);
+                    c12.setClickable(false);
+                    myRef = database.getReference("parties").child(id).child("c12");
+                    myRef.setValue(currentPlayer);
+                    break;
+                }else{
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Impossible de séléctionner cette case", Snackbar.LENGTH_LONG);
+                    snackbar1.show();
+                    break;
+                }
             case R.id.c13:
-                c13.setText(currentPlayer);
-                c13.setClickable(false);
-                myRef = database.getReference("parties").child(id).child("c13");
-                myRef.setValue(currentPlayer);
-                break;
+                if(c13.getText().toString().equals("") || c13.getText().toString().equals(" ")){
+                    c13.setText(currentPlayer);
+                    c13.setClickable(false);
+                    myRef = database.getReference("parties").child(id).child("c13");
+                    myRef.setValue(currentPlayer);
+                    break;
+                }else{
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Impossible de séléctionner cette case", Snackbar.LENGTH_LONG);
+                    snackbar1.show();
+                    break;
+                }
+
             case R.id.c21:
-                c21.setText(currentPlayer);
-                c21.setClickable(false);
-                myRef = database.getReference("parties").child(id).child("c21");
-                myRef.setValue(currentPlayer);
-                break;
+                if(c21.getText().toString().equals("") || c21.getText().toString().equals(" ")){
+                    c21.setText(currentPlayer);
+                    c21.setClickable(false);
+                    myRef = database.getReference("parties").child(id).child("c21");
+                    myRef.setValue(currentPlayer);
+                    break;
+                }else{
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Impossible de séléctionner cette case", Snackbar.LENGTH_LONG);
+                    snackbar1.show();
+                    break;
+                }
             case R.id.c22:
-                c22.setText(currentPlayer);
-                c22.setClickable(false);
-                myRef = database.getReference("parties").child(id).child("c22");
-                myRef.setValue(currentPlayer);
-                break;
+                if(c22.getText().toString().equals("") || c22.getText().toString().equals(" ")){
+                    c22.setText(currentPlayer);
+                    c22.setClickable(false);
+                    myRef = database.getReference("parties").child(id).child("c22");
+                    myRef.setValue(currentPlayer);
+                    break;
+                }else{
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Impossible de séléctionner cette case", Snackbar.LENGTH_LONG);
+                    snackbar1.show();
+                    break;
+                }
             case R.id.c23:
-                c23.setText(currentPlayer);
-                c23.setClickable(false);
-                myRef = database.getReference("parties").child(id).child("c23");
-                myRef.setValue(currentPlayer);
-                break;
+                if(c23.getText().toString().equals("") || c23.getText().toString().equals(" ")){
+                    c23.setText(currentPlayer);
+                    c23.setClickable(false);
+                    myRef = database.getReference("parties").child(id).child("c23");
+                    myRef.setValue(currentPlayer);
+                    break;
+                }else{
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Impossible de séléctionner cette case", Snackbar.LENGTH_LONG);
+                    snackbar1.show();
+                    break;
+                }
+
             case R.id.c31:
-                c31.setText(currentPlayer);
-                c31.setClickable(false);
-                myRef = database.getReference("parties").child(id).child("c31");
-                myRef.setValue(currentPlayer);
-                break;
+                if(c31.getText().toString().equals("") || c31.getText().toString().equals(" ")){
+                    c31.setText(currentPlayer);
+                    c31.setClickable(false);
+                    myRef = database.getReference("parties").child(id).child("c31");
+                    myRef.setValue(currentPlayer);
+                    break;
+                }else{
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Impossible de séléctionner cette case", Snackbar.LENGTH_LONG);
+                    snackbar1.show();
+                    break;
+                }
             case R.id.c32:
-                c32.setText(currentPlayer);
-                c32.setClickable(false);
-                myRef = database.getReference("parties").child(id).child("c32");
-                myRef.setValue(currentPlayer);
-                break;
+                if(c32.getText().toString().equals("") || c32.getText().toString().equals(" ")){
+                    c32.setText(currentPlayer);
+                    c32.setClickable(false);
+                    myRef = database.getReference("parties").child(id).child("c32");
+                    myRef.setValue(currentPlayer);
+                    break;
+                }else{
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Impossible de séléctionner cette case", Snackbar.LENGTH_LONG);
+                    snackbar1.show();
+                    break;
+                }
             case R.id.c33:
-                c33.setText(currentPlayer);
-                c33.setClickable(false);
-                myRef = database.getReference("parties").child(id).child("c33");
-                myRef.setValue(currentPlayer);
-                break;
+                if(!c33.getText().toString().equals("") || !c33.getText().toString().equals(" ")){
+                    c33.setText(currentPlayer);
+                    c33.setClickable(false);
+                    myRef = database.getReference("parties").child(id).child("c33");
+                    myRef.setValue(currentPlayer);
+                    break;
+                }else{
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Impossible de séléctionner cette case", Snackbar.LENGTH_LONG);
+                    snackbar1.show();
+                    break;
+                }
             default:
                 break;
         }
@@ -457,14 +427,12 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
             case R.id.action_message:
                 if (enabledChat) {
                     Intent intentChat = new Intent(PartyActivity.this, ChatActivity.class);
-                    intentChat.putExtra("id", getIntent().getBooleanExtra(DeepLink.IS_DEEP_LINK, false)
-                            ? Uri.parse(getIntent().getExtras().getString(DeepLink.URI)).getHost()
-                            : getIntent().getStringExtra("id"));
+                    intentChat.putExtra("id", getIntent().getStringExtra("id"));
                     intentChat.putExtra("player1", player1_name);
                     intentChat.putExtra("player2", player2_name);
                     startActivity(intentChat);
                 } else {
-                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Chat indisponible, aucun player 2", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar1 = Snackbar.make(cl_partyActivity, "Chat indisponible, aucun adversaire", Snackbar.LENGTH_LONG);
                     snackbar1.show();
                 }
                 return true;

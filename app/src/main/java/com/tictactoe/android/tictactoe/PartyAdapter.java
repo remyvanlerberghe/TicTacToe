@@ -54,7 +54,8 @@ public class PartyAdapter extends RecyclerView.Adapter<PartyAdapter.DataObjectHo
 
     @Override
     public void onBindViewHolder(DataObjectHolder holder, int position) {
-        holder.titre.setText(mDataset.get(position).getId());
+//        holder.titre.setText(mDataset.get(position).getId());
+        holder.titre.setText(" ");
         holder.description.setText(mDataset.get(position).getUser());
     }
 

@@ -12,6 +12,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.tictactoe.android.tictactoe.Models.Party;
+import com.tictactoe.android.tictactoe.Models.User;
+
 public class MainActivity extends AppCompatActivity {
 
     ConstraintLayout cl_mainActivity;
@@ -34,7 +39,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String nom = name.getText().toString();
                 if (!nom.isEmpty() && nom != "") {
-                    Globals.name = nom;
+
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference("joueurs").push();
+                    User u = new User();
+                    u.nom = nom;
+                    myRef.setValue(u);
+
+                    Globals.playerId = myRef.getKey();
+                    Globals.playerName = nom;
+
                     Intent i = new Intent(MainActivity.this, InviteActivity.class);
                     startActivity(i);
                 } else {

@@ -10,4 +10,11 @@
         app:showAsAction="always"
         android:icon="@drawable/ic_format_list_bulleted"/>
 
+    <item
+        android:id="@+id/action_join"
+        android:orderInCategory="100"
+        android:title="Message"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_joypad"/>
+
 </menu>

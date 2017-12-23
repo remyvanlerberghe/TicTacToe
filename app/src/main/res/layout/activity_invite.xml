@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/inviteActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.tictactoe.android.tictactoe.InviteActivity">
@@ -24,40 +25,20 @@
             android:layout_marginTop="50dp"
             android:textColor="@color/colorPrimaryDark"/>
 
-        <EditText
-            android:id="@+id/nomJoueur"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Saisir un nom d'utilisateur"
-            android:layout_marginTop="50dp"
-            android:enabled="false"/>
-
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/inviterAmi"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Créer une partie et inviter un ami" />
+            android:text="Créer une partie et inviter un ami"
+            android:layout_marginTop="100dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="OU"
-            android:layout_marginTop="25dp"/>
-
-        <EditText
-            android:id="@+id/rejoindrePartieId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Saisir l'identifiant d'une partie"
-            android:layout_marginTop="25dp"/>
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/rejoindrePartie"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Rejoindre" />
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/creerParite"

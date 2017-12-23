@@ -19,8 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InviteActivity" />
-        <activity android:name=".PartyActivity" />
+        <activity
+            android:name=".InviteActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".PartyActivity"
+            android:parentActivityName=".InviteActivity" />
         <activity
             android:name=".ChatActivity"
             android:parentActivityName=".PartyActivity" />
@@ -36,7 +40,9 @@
                 <data android:scheme="ttt" />
             </intent-filter>
         </activity>
-        <activity android:name=".ListActivity"></activity>
+        <activity
+            android:name=".ListActivity"
+            android:parentActivityName=".InviteActivity"></activity>
     </application>
 
 </manifest>

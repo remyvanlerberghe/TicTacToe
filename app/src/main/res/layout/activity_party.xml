@@ -41,21 +41,27 @@
                     android:id="@+id/c11"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20dp"/>
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/c12"
                     style="@style/Button.Rose"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20dp"/>
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/c13"
                     style="@style/Widget.AppCompat.Button"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20dp"/>
 
             </LinearLayout>
 
@@ -69,21 +75,27 @@
                     style="@style/Widget.AppCompat.Button"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20dp"/>
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/c22"
                     style="@style/Widget.AppCompat.Button"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20dp"/>
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/c23"
                     style="@style/Widget.AppCompat.Button"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20dp"/>
 
             </LinearLayout>
 
@@ -97,21 +109,27 @@
                     style="@style/Widget.AppCompat.Button"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20dp"/>
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/c32"
                     style="@style/Widget.AppCompat.Button"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20dp"/>
 
                 <android.support.v7.widget.AppCompatButton
                     android:id="@+id/c33"
                     style="@style/Widget.AppCompat.Button"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="20dp"/>
 
             </LinearLayout>
         </LinearLayout>

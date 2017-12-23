@@ -64,7 +64,7 @@ public class ChatActivity extends AppCompatActivity {
         TextDrawable p2 = TextDrawable.builder()
                 .buildRect(player2.toUpperCase().substring(0, 1), ContextCompat.getColor(this, R.color.chatGreyDark));
         Bitmap p2icon = drawableToBitmap(p2);
-        if (Globals.name.equals(player1)) {
+        if (Globals.playerName.equals(player1)) {
             me = new User(1, player1, p1icon);
             you = new User(2, player2, p2icon);
         } else {
@@ -75,7 +75,7 @@ public class ChatActivity extends AppCompatActivity {
         mChatView = (ChatView) findViewById(R.id.chatView);
         mChatView.setBackgroundColor(Color.WHITE);
         mChatView.setSendIcon(R.drawable.ic_action_send);
-        mChatView.setInputTextHint("Message...");
+        mChatView.setInputTextHint("Message ...");
         mChatView.setMessageMarginTop(5);
         mChatView.setMessageMarginBottom(5);
         messageViewContainer = (ConstraintLayout) findViewById(R.id.messageViewContainer);
@@ -86,7 +86,7 @@ public class ChatActivity extends AppCompatActivity {
                 String toSend = mChatView.getInputText();
                 DatabaseReference myRef = database.getReference("parties").child(getIntent().getStringExtra("id"));
                 DatabaseReference messageRef = myRef.child("chatroom").child("messages").push();
-                messageRef.setValue(new com.tictactoe.android.tictactoe.Models.Message(Globals.name, toSend, ServerValue.TIMESTAMP));
+                messageRef.setValue(new com.tictactoe.android.tictactoe.Models.Message(Globals.playerName, toSend, ServerValue.TIMESTAMP));
             }
         });
         messagesRef.addValueEventListener(new ValueEventListener() {
@@ -100,7 +100,7 @@ public class ChatActivity extends AppCompatActivity {
                     long time = (long) messageSnapshot.child("time").getValue();
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(time);
-                    if (sender.equals(Globals.name)) {
+                    if (sender.equals(Globals.playerName)) {
                         Message message = new Message.Builder().setUser(me)
                                 .setRightMessage(true)
                                 .setMessageText(content)
