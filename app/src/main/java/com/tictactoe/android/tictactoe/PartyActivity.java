@@ -1,8 +1,6 @@
 package com.tictactoe.android.tictactoe;
 
 import android.content.Intent;
-import android.net.Uri;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
@@ -25,8 +23,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.tictactoe.android.tictactoe.Models.User;
-
-import java.net.URI;
 
 @DeepLink("ttt://{id}")
 public class PartyActivity extends AppCompatActivity implements View.OnClickListener {
@@ -60,7 +56,6 @@ public class PartyActivity extends AppCompatActivity implements View.OnClickList
         if (intent.getBooleanExtra(DeepLink.IS_DEEP_LINK, false)) {
             Bundle parameters = intent.getExtras();
             id = parameters.getString("id");
-            System.out.println(id);
             final DatabaseReference deeplinkRef = database.getReference("parties").child(id);
             new MaterialDialog.Builder(this)
                     .title("Entrez votre nom d'utilisateur")

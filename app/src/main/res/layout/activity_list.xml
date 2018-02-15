@@ -7,13 +7,14 @@
     tools:context="com.tictactoe.android.tictactoe.ListActivity">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Aucune partie"
         android:textAlignment="center"
         android:textSize="25dp"
-        android:layout_marginTop="150dp"
-        android:textColor="@color/colorPrimaryDark"/>
+        android:textColor="@color/colorPrimaryDark"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="8dp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list_annonces"
